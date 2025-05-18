@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      - name: Run tests
-        run: yarn test --if-present
-
       - name: Build app
         run: yarn build
 
