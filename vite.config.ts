@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'https://financial-control-21c81a8e2922.herokuapp.com',
         changeOrigin: true,
         secure: false,
       }
