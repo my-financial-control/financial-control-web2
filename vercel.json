@@ -1,0 +1,14 @@
+{
+    "version": 2,
+    "public": false,
+    "github": {
+        "enabled": false
+    },
+    "framework": "vite",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
