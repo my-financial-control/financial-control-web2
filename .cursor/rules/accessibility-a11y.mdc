@@ -1,0 +1,10 @@
+---
+description: 
+globs: *.tsx,*.html,*.css,*.scss,*.jsx
+alwaysApply: false
+---
+Use semantic HTML.
+
+Apply appropriate ARIA attributes.
+
+Ensure full keyboard navigation.
