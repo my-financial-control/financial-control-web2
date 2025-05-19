@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
+      '/api/v1': {
         target: 'https://financial-control-21c81a8e2922.herokuapp.com',
         changeOrigin: true,
         secure: false,
