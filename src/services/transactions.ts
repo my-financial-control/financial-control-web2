@@ -1,8 +1,6 @@
 import type { Transaction, TransactionCreate, CalculateTotals } from '../types/transaction';
 import type { DateFilters, TransactionType } from '../types/common';
 
-const API_PATH = '/api/v1';
-
 export type FindAllTransactionsParams = {
     type?: TransactionType;
     month?: number;
@@ -10,6 +8,8 @@ export type FindAllTransactionsParams = {
 }
 
 export const transactionsApi = {
+    apiPath: '/api/v1/transactions',
+
     findAll: async (params?: FindAllTransactionsParams): Promise<Transaction[]> => {
         const queryParams = new URLSearchParams();
 
@@ -25,7 +25,7 @@ export const transactionsApi = {
             queryParams.append('year', params.year.toString());
         }
 
-        const response = await fetch(`${API_PATH}/transactions?${queryParams.toString()}`);
+        const response = await fetch(`${transactionsApi.apiPath}?${queryParams.toString()}`);
 
         if (!response.ok) {
             throw new Error('Failed to fetch transactions');
@@ -42,7 +42,7 @@ export const transactionsApi = {
             formData.append('receipt', receipt);
         }
 
-        const response = await fetch(`${API_PATH}/transactions`, {
+        const response = await fetch(`${transactionsApi.apiPath}`, {
             method: 'POST',
             body: formData,
         });
@@ -55,7 +55,7 @@ export const transactionsApi = {
     },
 
     downloadReceipt: async (transactionId: string): Promise<Blob> => {
-        const response = await fetch(`${API_PATH}/transactions/${transactionId}/receipt`);
+        const response = await fetch(`${transactionsApi.apiPath}/${transactionId}/receipt`);
 
         if (!response.ok) {
             throw new Error('Failed to download receipt');
@@ -75,7 +75,7 @@ export const transactionsApi = {
             queryParams.append('year', params.year.toString());
         }
 
-        const response = await fetch(`${API_PATH}/transactions/totals?${queryParams.toString()}`);
+        const response = await fetch(`${transactionsApi.apiPath}/totals?${queryParams.toString()}`);
 
         if (!response.ok) {
             throw new Error('Failed to calculate totals');

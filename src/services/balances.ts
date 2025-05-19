@@ -1,9 +1,10 @@
 import type { CheckBalance } from '../types/balance';
 import type { DateFilters } from '../types/common';
-const API_PATH = '/api/v1';
 
 
 export const balancesApi = {
+    apiPath: '/api/v1',
+
     checkBalance: async (filters: DateFilters): Promise<CheckBalance> => {
         const queryParams = new URLSearchParams();
 
@@ -15,7 +16,7 @@ export const balancesApi = {
             queryParams.append('year', filters.year.toString());
         }
 
-        const response = await fetch(`${API_PATH}/check-balance?${queryParams.toString()}`);
+        const response = await fetch(`${balancesApi.apiPath}/check-balance?${queryParams.toString()}`);
 
         if (!response.ok) {
             throw new Error('Failed to check balance');

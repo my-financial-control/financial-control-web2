@@ -1,10 +1,10 @@
 import { type TransactionCategory } from '../types/category';
 
-const API_PATH = '/api/v1';
-
 export const categoriesApi = {
+    apiPath: '/api/v1/transactions/categories',
+
     findAll: async (): Promise<TransactionCategory[]> => {
-        const response = await fetch(`${API_PATH}/transactions/categories`);
+        const response = await fetch(categoriesApi.apiPath);
         if (!response.ok) {
             throw new Error('Failed to fetch categories');
         }
