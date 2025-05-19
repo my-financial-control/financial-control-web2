@@ -6,13 +6,13 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   server: {
-    proxy: {
+    proxy: process.env.NODE_ENV === 'development' ? {
       '/api/v1': {
         target: 'https://financial-control-21c81a8e2922.herokuapp.com',
         changeOrigin: true,
         secure: false,
       }
-    }
+    } : undefined
   },
   resolve: {
     alias: {
