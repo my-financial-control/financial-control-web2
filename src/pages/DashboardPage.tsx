@@ -1,13 +1,23 @@
-import { Container, Typography, Box, Paper, Skeleton, Fade } from "@mui/material";
+import { Container, Typography, Box, Paper, Skeleton, Fade, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import { useCheckBalance } from "../hooks/useBalances";
 import { useCalculateTotals } from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/formatters";
+import { useState } from "react";
+import { months } from "../utils/data";
 
 const DashboardPage = () => {
-    const { data: balance, isLoading: isBalanceLoading } = useCheckBalance({ month: 1, year: 2025 });
-    const { data: totals, isLoading: isTotalsLoading } = useCalculateTotals({ month: 1, year: 2025 });
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth() + 1;
+    
+    const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+    
+    const { data: balance, isLoading: isBalanceLoading } = useCheckBalance({ month: selectedMonth, year: selectedYear });
+    const { data: totals, isLoading: isTotalsLoading } = useCalculateTotals({ month: selectedMonth, year: selectedYear });
 
     const isLoading = isBalanceLoading || isTotalsLoading;
+
+    const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -17,6 +27,40 @@ const DashboardPage = () => {
                         <Typography variant="h5" fontWeight="bold" color="text.primary">
                             Dashboard
                         </Typography>
+                        <Box display="flex" gap={2}>
+                            <FormControl sx={{ minWidth: 120 }}>
+                                <InputLabel id="month-select-label">Mês</InputLabel>
+                                <Select
+                                    labelId="month-select-label"
+                                    id="month-select"
+                                    value={selectedMonth}
+                                    label="Mês"
+                                    onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                                >
+                                    {months.map((month) => (
+                                        <MenuItem key={month.value} value={month.value}>
+                                            {month.label}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl sx={{ minWidth: 120 }}>
+                                <InputLabel id="year-select-label">Ano</InputLabel>
+                                <Select
+                                    labelId="year-select-label"
+                                    id="year-select"
+                                    value={selectedYear}
+                                    label="Ano"
+                                    onChange={(e) => setSelectedYear(Number(e.target.value))}
+                                >
+                                    {years.map((year) => (
+                                        <MenuItem key={year} value={year}>
+                                            {year}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
                     </Box>
                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
                         {isLoading ? (
