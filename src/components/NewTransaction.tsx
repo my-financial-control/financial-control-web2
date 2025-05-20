@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import {
     Dialog,
-    DialogTitle,
     DialogContent,
-    DialogActions,
     Button,
     Stepper,
     Step,
     StepLabel,
+    StepContent,
     Box,
     TextField,
     Select,
@@ -259,32 +258,41 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Nova Transação</DialogTitle>
             <DialogContent>
-                <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-                    {steps.map((label) => (
+                <Stepper activeStep={activeStep} orientation="vertical">
+                    {steps.map((label, index) => (
                         <Step key={label}>
                             <StepLabel>{label}</StepLabel>
+                            <StepContent>
+                                {activeStep === index && (
+                                    <Box>
+                                        {renderStepContent(activeStep)}
+                                        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+                                            {activeStep > 0 && (
+                                                <Button onClick={handleBack} variant="text">
+                                                    Voltar
+                                                </Button>
+                                            )}
+                                            {activeStep === steps.length - 1 ? (
+                                                <Button onClick={handleSubmit} variant="contained" color="primary">
+                                                    Salvar
+                                                </Button>
+                                            ) : (
+                                                <Button onClick={handleNext} variant="contained" color="primary">
+                                                    Próximo
+                                                </Button>
+                                            )}
+                                            <Button onClick={onClose} variant="text" color="secondary">
+                                                Cancelar
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )}
+                            </StepContent>
                         </Step>
                     ))}
                 </Stepper>
-                {renderStepContent(activeStep)}
             </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose}>Cancelar</Button>
-                {activeStep > 0 && (
-                    <Button onClick={handleBack}>Voltar</Button>
-                )}
-                {activeStep === steps.length - 1 ? (
-                    <Button onClick={handleSubmit} variant="contained" color="primary">
-                        Salvar
-                    </Button>
-                ) : (
-                    <Button onClick={handleNext} variant="contained" color="primary">
-                        Próximo
-                    </Button>
-                )}
-            </DialogActions>
         </Dialog>
     );
 }
