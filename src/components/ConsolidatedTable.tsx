@@ -2,6 +2,7 @@ import { Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody
 import { useState } from "react";
 import { formatCurrency } from "../utils/formatters";
 import type { ConsolidatedTransactions } from "../types/transaction";
+import { ConsolidatedTransactionsModal } from "./ConsolidatedTransactionsModal";
 
 export type Order = 'asc' | 'desc';
 
@@ -15,6 +16,8 @@ interface ConsolidatedTableProps {
 export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort }: ConsolidatedTableProps) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [selectedConsolidation, setSelectedConsolidation] = useState<ConsolidatedTransactions | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleChangePage = (_event: unknown, newPage: number) => {
         setPage(newPage);
@@ -27,6 +30,16 @@ export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort }: Conso
 
     const createSortHandler = (property: keyof ConsolidatedTransactions) => () => {
         onRequestSort(property);
+    };
+
+    const handleRowClick = (consolidation: ConsolidatedTransactions) => {
+        setSelectedConsolidation(consolidation);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedConsolidation(null);
     };
 
     const sortedData = [...data].sort((a, b) => {
@@ -45,50 +58,68 @@ export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort }: Conso
     );
 
     return (
-        <TableContainer component={Paper} elevation={0} variant="outlined">
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>
-                            <TableSortLabel
-                                active={orderBy === 'title'}
-                                direction={orderBy === 'title' ? order : 'asc'}
-                                onClick={createSortHandler('title')}
-                            >
-                                Título
-                            </TableSortLabel>
-                        </TableCell>
-                        <TableCell align="right">
-                            <TableSortLabel
-                                active={orderBy === 'total'}
-                                direction={orderBy === 'total' ? order : 'asc'}
-                                onClick={createSortHandler('total')}
-                            >
-                                Total
-                            </TableSortLabel>
-                        </TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {paginatedData.map((row) => (
-                        <TableRow key={row.title}>
-                            <TableCell>{row.title}</TableCell>
-                            <TableCell align="right">{formatCurrency(row.total)}</TableCell>
+        <>
+            <TableContainer component={Paper} elevation={0} variant="outlined">
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>
+                                <TableSortLabel
+                                    active={orderBy === 'title'}
+                                    direction={orderBy === 'title' ? order : 'asc'}
+                                    onClick={createSortHandler('title')}
+                                >
+                                    Título
+                                </TableSortLabel>
+                            </TableCell>
+                            <TableCell align="right">
+                                <TableSortLabel
+                                    active={orderBy === 'total'}
+                                    direction={orderBy === 'total' ? order : 'asc'}
+                                    onClick={createSortHandler('total')}
+                                >
+                                    Total
+                                </TableSortLabel>
+                            </TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-            <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                labelRowsPerPage="Itens por página:"
-                labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
-            />
-        </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                        {paginatedData.map((row) => (
+                            <TableRow 
+                                key={row.title}
+                                onClick={() => handleRowClick(row)}
+                                sx={{
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        bgcolor: 'rgba(0, 0, 0, 0.04)'
+                                    }
+                                }}
+                            >
+                                <TableCell>{row.title}</TableCell>
+                                <TableCell align="right">{formatCurrency(row.total)}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    labelRowsPerPage="Itens por página:"
+                    labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+                />
+            </TableContainer>
+            {selectedConsolidation && (
+                <ConsolidatedTransactionsModal
+                    open={isModalOpen}
+                    onClose={handleCloseModal}
+                    consolidation={selectedConsolidation}
+                />
+            )}
+        </>
     );
 };

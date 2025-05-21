@@ -33,3 +33,12 @@ export const formatFileName = (title: string): string => {
         .replace(/[àáâãéèêíìîóòôõúùûüçñýœ]/g, char => accentMap[char] || char)
         .replace(/[^a-z0-9]/g, '_');
 }
+
+export const shortenUuid = (uuid: string): string => {
+    if (!uuid || uuid.length < 12) {
+        return uuid;
+    }
+    const start = uuid.substring(0, 8);
+    const end = uuid.substring(uuid.length - 4);
+    return `${start}...${end}`;
+}
