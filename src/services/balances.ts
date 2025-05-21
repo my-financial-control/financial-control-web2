@@ -3,7 +3,7 @@ import type { DateFilters } from '../types/common';
 
 
 export const balancesApi = {
-    apiPath: '/api/v1',
+    apiPath: '/api/v1/check-balance',
 
     checkBalance: async (filters: DateFilters): Promise<CheckBalance> => {
         const queryParams = new URLSearchParams();
@@ -16,7 +16,7 @@ export const balancesApi = {
             queryParams.append('year', filters.year.toString());
         }
 
-        const response = await fetch(`${balancesApi.apiPath}/check-balance?${queryParams.toString()}`);
+        const response = await fetch(`${balancesApi.apiPath}?${queryParams.toString()}`);
 
         if (!response.ok) {
             throw new Error('Failed to check balance');
@@ -24,4 +24,24 @@ export const balancesApi = {
 
         return response.json();
     },
+
+    checkBalancePlusRemainingPayments: async (filters: DateFilters): Promise<CheckBalance> => {
+        const queryParams = new URLSearchParams();
+
+        if (filters.month) {
+            queryParams.append('month', filters.month.toString());
+        }
+
+        if (filters.year) {
+            queryParams.append('year', filters.year.toString());
+        }
+
+        const response = await fetch(`${balancesApi.apiPath}/plus-remaining-payments?${queryParams.toString()}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to check balance plus remaining payments');
+        }
+
+        return response.json();
+    }
 };

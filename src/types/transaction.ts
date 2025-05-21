@@ -45,3 +45,9 @@ export type TransactionCreate = {
     date: Date;
     categoryId?: string;
 };
+
+export type ConsolidatedTransactions = {
+    title: string;
+    total: number;
+    transactions: Transaction[];
+}

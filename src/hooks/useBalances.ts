@@ -8,3 +8,10 @@ export const useCheckBalance = (filters: DateFilters) => {
         queryFn: () => balancesApi.checkBalance(filters),
     });
 };
+
+export const useCheckBalancePlusRemainingPayments = (filters: DateFilters) => {
+    return useQuery({
+        queryKey: ['checkBalancePlusRemainingPayments', filters],
+        queryFn: () => balancesApi.checkBalancePlusRemainingPayments(filters),
+    });
+};

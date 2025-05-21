@@ -1,5 +1,5 @@
-import type { Transaction, TransactionCreate, CalculateTotals } from '../types/transaction';
-import type { DateFilters, TransactionType } from '../types/common';
+import type { Transaction, TransactionCreate, CalculateTotals, ConsolidatedTransactions } from '../types/transaction';
+import type { DateFilters, TransactionType, ConsolidatedFilters } from '../types/common';
 
 export type FindAllTransactionsParams = {
     type?: TransactionType;
@@ -79,6 +79,22 @@ export const transactionsApi = {
 
         if (!response.ok) {
             throw new Error('Failed to calculate totals');
+        }
+
+        return response.json();
+    },
+
+    calculateConsolidated: async (params: ConsolidatedFilters): Promise<ConsolidatedTransactions> => {
+        const queryParams = new URLSearchParams();
+
+        queryParams.append('month', params.month.toString());
+        queryParams.append('year', params.year.toString());
+        queryParams.append('type', params.type);
+
+        const response = await fetch(`${transactionsApi.apiPath}/consolidated?${queryParams.toString()}`);
+
+        if (!response.ok) {
+            throw new Error('Failed to calculate consolidated');
         }
 
         return response.json();

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
-import { Dashboard as DashboardIcon, CreditCard } from "@mui/icons-material";
+import { Dashboard as DashboardIcon, CreditCard, BarChart } from "@mui/icons-material";
 
 const Header = () => {
     const location = useLocation();
@@ -51,6 +51,23 @@ const Header = () => {
                                     }}
                                 >
                                     Transações
+                                </Button>
+                            </Box>
+                            <Box component="li">
+                                <Button
+                                    component={Link}
+                                    to="/consolidated"
+                                    startIcon={<BarChart fontSize="small" />}
+                                    sx={{
+                                        color: isActive('/consolidated') ? 'primary.main' : 'text.secondary',
+                                        fontWeight: isActive('/consolidated') ? 'medium' : 'regular',
+                                        '&:hover': {
+                                            color: 'primary.main',
+                                            bgcolor: 'transparent',
+                                        },
+                                    }}
+                                >
+                                    Consolidado
                                 </Button>
                             </Box>
                         </Box>
