@@ -77,7 +77,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                 }
                 break;
             case 1:
-                if (!title.trim()) {
+                if (!title.trim() || title.trim().length < 3) {
                     newErrors.title = true;
                     isValid = false;
                 }
@@ -190,7 +190,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                                 setErrors(prev => ({ ...prev, title: false }));
                             }}
                             error={errors.title}
-                            helperText={errors.title ? 'Este campo é obrigatório' : ''}
+                            helperText={errors.title ? 'O título deve ter pelo menos 3 caracteres' : ''}
                             sx={{ mb: 2 }}
                         />
                         <TextField
