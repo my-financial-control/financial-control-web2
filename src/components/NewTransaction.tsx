@@ -16,6 +16,7 @@ import {
     Typography,
     Paper,
     Grid,
+    FormHelperText,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -47,13 +48,60 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [receipt, setReceipt] = useState<File | null>(null);
 
+    const [errors, setErrors] = useState({
+        transactionType: false,
+        categoryId: false,
+        title: false,
+        value: false,
+        date: false,
+    });
+
     const { data: categories = [] } = useCategories();
     const createTransaction = useCreateTransaction();
 
     const filteredCategories = categories.filter(cat => cat.type === transactionType);
 
+    const validateStep = (step: number): boolean => {
+        const newErrors = { ...errors };
+        let isValid = true;
+
+        switch (step) {
+            case 0:
+                if (!transactionType) {
+                    newErrors.transactionType = true;
+                    isValid = false;
+                }
+                if (!categoryId) {
+                    newErrors.categoryId = true;
+                    isValid = false;
+                }
+                break;
+            case 1:
+                if (!title.trim()) {
+                    newErrors.title = true;
+                    isValid = false;
+                }
+                if (!value || Number(value) <= 0) {
+                    newErrors.value = true;
+                    isValid = false;
+                }
+                break;
+            case 2:
+                if (!date) {
+                    newErrors.date = true;
+                    isValid = false;
+                }
+                break;
+        }
+
+        setErrors(newErrors);
+        return isValid;
+    };
+
     const handleNext = () => {
-        setActiveStep((prevStep) => prevStep + 1);
+        if (validateStep(activeStep)) {
+            setActiveStep((prevStep) => prevStep + 1);
+        }
     };
 
     const handleBack = () => {
@@ -87,25 +135,34 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
             case 0:
                 return (
                     <Box sx={{ mt: 2 }}>
-                        <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>Tipo de Transação</InputLabel>
+                        <FormControl fullWidth sx={{ mb: 2 }} error={errors.transactionType}>
+                            <InputLabel>Tipo de Transação *</InputLabel>
                             <Select
                                 value={transactionType}
-                                label="Tipo de Transação"
-                                onChange={(e) => setTransactionType(e.target.value as TransactionType)}
+                                label="Tipo de Transação *"
+                                onChange={(e) => {
+                                    setTransactionType(e.target.value as TransactionType);
+                                    setErrors(prev => ({ ...prev, transactionType: false }));
+                                }}
                             >
                                 <MenuItem value="CREDIT">Crédito</MenuItem>
                                 <MenuItem value="EXPENSE">Despesa</MenuItem>
                             </Select>
+                            {errors.transactionType && (
+                                <FormHelperText>Este campo é obrigatório</FormHelperText>
+                            )}
                         </FormControl>
 
                         {transactionType && (
-                            <FormControl fullWidth>
-                                <InputLabel>Categoria</InputLabel>
+                            <FormControl fullWidth error={errors.categoryId}>
+                                <InputLabel>Categoria *</InputLabel>
                                 <Select
                                     value={categoryId}
-                                    label="Categoria"
-                                    onChange={(e) => setCategoryId(e.target.value)}
+                                    label="Categoria *"
+                                    onChange={(e) => {
+                                        setCategoryId(e.target.value);
+                                        setErrors(prev => ({ ...prev, categoryId: false }));
+                                    }}
                                 >
                                     {filteredCategories.map((category) => (
                                         <MenuItem key={category.id} value={category.id}>
@@ -113,6 +170,9 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                {errors.categoryId && (
+                                    <FormHelperText>Este campo é obrigatório</FormHelperText>
+                                )}
                             </FormControl>
                         )}
                     </Box>
@@ -123,9 +183,14 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                     <Box sx={{ mt: 2 }}>
                         <TextField
                             fullWidth
-                            label="Título"
+                            label="Título *"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                                setTitle(e.target.value);
+                                setErrors(prev => ({ ...prev, title: false }));
+                            }}
+                            error={errors.title}
+                            helperText={errors.title ? 'Este campo é obrigatório' : ''}
                             sx={{ mb: 2 }}
                         />
                         <TextField
@@ -138,7 +203,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                             sx={{ mb: 2 }}
                         />
                         <NumberFormatBase
-                            label="Valor"
+                            label="Valor *"
                             placeholder='R$ 0,00'
                             format={currencyFormatterForField}
                             prefix={"R$ "}
@@ -146,8 +211,11 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                             fullWidth
                             sx={{ mb: 2 }}
                             value={value}
+                            error={errors.value}
+                            helperText={errors.value ? 'Este campo é obrigatório' : ''}
                             onValueChange={(values) => {
                                 setValue(values.value);
+                                setErrors(prev => ({ ...prev, value: false }));
                             }}
                         />
                         <Button
@@ -170,18 +238,27 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                     <Box sx={{ mt: 2 }}>
                         <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={ptBR}>
                             <DatePicker
-                                label="Data"
+                                label="Data *"
                                 value={date}
-                                onChange={(newValue: Date | null) => setDate(newValue)}
+                                onChange={(newValue: Date | null) => {
+                                    setDate(newValue);
+                                    setErrors(prev => ({ ...prev, date: false }));
+                                }}
                                 sx={{ width: '100%', mb: 2 }}
+                                slotProps={{
+                                    textField: {
+                                        error: errors.date,
+                                        helperText: errors.date ? 'Este campo é obrigatório' : ''
+                                    }
+                                }}
                             />
                         </LocalizationProvider>
 
                         <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>Mês</InputLabel>
+                            <InputLabel>Mês *</InputLabel>
                             <Select
                                 value={currentMonth}
-                                label="Mês"
+                                label="Mês *"
                                 onChange={(e) => setCurrentMonth(Number(e.target.value))}
                             >
                                 {months.map((month) => (
@@ -193,10 +270,10 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                         </FormControl>
 
                         <FormControl fullWidth>
-                            <InputLabel>Ano</InputLabel>
+                            <InputLabel>Ano *</InputLabel>
                             <Select
                                 value={currentYear}
-                                label="Ano"
+                                label="Ano *"
                                 onChange={(e) => setCurrentYear(Number(e.target.value))}
                             >
                                 {[currentYear - 1, currentYear, currentYear + 1].map((year) => (
