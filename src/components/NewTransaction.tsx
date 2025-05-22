@@ -21,14 +21,14 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { ptBR } from 'date-fns/locale';
+import { NumberFormatBase } from 'react-number-format';
 import { useCategories } from '../hooks/useCategories';
 import { useCreateTransaction } from '../hooks/useTransactions';
 import type { TransactionType } from '../types/common';
 import type { TransactionCreate } from '../types/transaction';
 import { months } from '../utils/data';
-
+import { currencyFormatterForField, formatCurrency } from '../utils/formatters';
 const steps = ['Tipo e Categoria', 'Detalhes', 'Data', 'Revisão'];
-
 
 interface NewTransactionProps {
     open: boolean;
@@ -137,13 +137,18 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                             rows={4}
                             sx={{ mb: 2 }}
                         />
-                        <TextField
-                            fullWidth
+                        <NumberFormatBase
                             label="Valor"
-                            type="number"
-                            value={value}
-                            onChange={(e) => setValue(e.target.value)}
+                            placeholder='R$ 0,00'
+                            format={currencyFormatterForField}
+                            prefix={"R$ "}
+                            customInput={TextField}
+                            fullWidth
                             sx={{ mb: 2 }}
+                            value={value}
+                            onValueChange={(values) => {
+                                setValue(values.value);
+                            }}
                         />
                         <Button
                             variant="outlined"
@@ -224,7 +229,9 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                                     <Typography variant="subtitle1">Descrição: {description}</Typography>
                                 </Grid>
                                 <Grid>
-                                    <Typography variant="subtitle1">Valor: R$ {Number(value).toFixed(2)}</Typography>
+                                    <Typography variant="subtitle1">
+                                        Valor: {formatCurrency(Number(value))}
+                                    </Typography>
                                 </Grid>
                                 <Grid>
                                     <Typography variant="subtitle1">

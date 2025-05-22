@@ -5,6 +5,18 @@ export const formatCurrency = (value: number): string => {
     }).format(value);
 };
 
+export const currencyFormatterForField = (value: string) => {
+    if (!value) return "";
+
+    const number = Number(value);
+    const amount = new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }).format(number / 100);
+
+    return `${amount}`;
+}
+
 export const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
