@@ -1,5 +1,5 @@
 import { Container, Typography, Box, Paper, Skeleton, Fade, Select, MenuItem, FormControl, InputLabel } from "@mui/material";
-import { useCheckBalance } from "../hooks/useBalances";
+import { useCheckBalance, useCheckBalancePlusRemainingPayments } from "../hooks/useBalances";
 import { useCalculateTotals } from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/formatters";
 import { useState } from "react";
@@ -13,9 +13,10 @@ const DashboardPage = () => {
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
     
     const { data: balance, isLoading: isBalanceLoading } = useCheckBalance({ month: selectedMonth, year: selectedYear });
+    const { data: balancePlusRemaining, isLoading: isBalancePlusRemainingLoading } = useCheckBalancePlusRemainingPayments({ month: selectedMonth, year: selectedYear });
     const { data: totals, isLoading: isTotalsLoading } = useCalculateTotals({ month: selectedMonth, year: selectedYear });
 
-    const isLoading = isBalanceLoading || isTotalsLoading;
+    const isLoading = isBalanceLoading || isTotalsLoading || isBalancePlusRemainingLoading;
 
     const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
@@ -62,25 +63,7 @@ const DashboardPage = () => {
                             </FormControl>
                         </Box>
                     </Box>
-                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
-                        {isLoading ? (
-                            <Skeleton variant="rounded" height={160} sx={{ borderRadius: 2 }} />
-                        ) : (
-                            <Fade in={true} timeout={500}>
-                                <Paper
-                                    elevation={0}
-                                    variant="outlined"
-                                    sx={{ p: 3, borderRadius: 2, height: '100%' }}
-                                >
-                                    <Typography variant="h6" color="text.secondary" mb={1}>
-                                        Saldo Total
-                                    </Typography>
-                                    <Typography variant="h4" fontWeight="bold" color="primary.main">
-                                        {formatCurrency(balance?.balance ?? 0)}
-                                    </Typography>
-                                </Paper>
-                            </Fade>
-                        )}
+                    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 3 }}>
                         {isLoading ? (
                             <Skeleton variant="rounded" height={160} sx={{ borderRadius: 2 }} />
                         ) : (
@@ -113,6 +96,42 @@ const DashboardPage = () => {
                                     </Typography>
                                     <Typography variant="h4" fontWeight="bold" color="error.main">
                                         {formatCurrency(totals?.expenses ?? 0)}
+                                    </Typography>
+                                </Paper>
+                            </Fade>
+                        )}
+                        {isLoading ? (
+                            <Skeleton variant="rounded" height={160} sx={{ borderRadius: 2 }} />
+                        ) : (
+                            <Fade in={true} timeout={500}>
+                                <Paper
+                                    elevation={0}
+                                    variant="outlined"
+                                    sx={{ p: 3, borderRadius: 2, height: '100%' }}
+                                >
+                                    <Typography variant="h6" color="text.secondary" mb={1}>
+                                        Saldo Total
+                                    </Typography>
+                                    <Typography variant="h4" fontWeight="bold" color="primary.main">
+                                        {formatCurrency(balance?.balance ?? 0)}
+                                    </Typography>
+                                </Paper>
+                            </Fade>
+                        )}
+                        {isLoading ? (
+                            <Skeleton variant="rounded" height={160} sx={{ borderRadius: 2 }} />
+                        ) : (
+                            <Fade in={true} timeout={500}>
+                                <Paper
+                                    elevation={0}
+                                    variant="outlined"
+                                    sx={{ p: 3, borderRadius: 2, height: '100%' }}
+                                >
+                                    <Typography variant="h6" color="text.secondary" mb={1}>
+                                        Saldo + Recebíveis
+                                    </Typography>
+                                    <Typography variant="h4" fontWeight="bold" color="primary.main">
+                                        {formatCurrency(balancePlusRemaining?.balance ?? 0)}
                                     </Typography>
                                 </Paper>
                             </Fade>
