@@ -1,13 +1,54 @@
 import { Link, useLocation } from "react-router-dom";
-import { AppBar, Toolbar, Typography, Box, Button } from "@mui/material";
-import { Dashboard as DashboardIcon, CreditCard, BarChart } from "@mui/icons-material";
+import { AppBar, Toolbar, Typography, Box, Button, IconButton, Drawer, List, ListItem } from "@mui/material";
+import { Dashboard as DashboardIcon, CreditCard, BarChart, Menu as MenuIcon } from "@mui/icons-material";
+import { useState } from "react";
 
 const Header = () => {
     const location = useLocation();
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     const isActive = (path: string) => {
         return location.pathname === path;
     };
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+
+    const menuItems = [
+        { path: '/', label: 'Dashboard', icon: <DashboardIcon fontSize="small" /> },
+        { path: '/transactions', label: 'Transações', icon: <CreditCard fontSize="small" /> },
+        { path: '/consolidated', label: 'Consolidado', icon: <BarChart fontSize="small" /> },
+    ];
+
+    const drawer = (
+        <List>
+            {menuItems.map((item) => (
+                <ListItem key={item.path} disablePadding>
+                    <Button
+                        component={Link}
+                        to={item.path}
+                        startIcon={item.icon}
+                        fullWidth
+                        sx={{
+                            color: isActive(item.path) ? 'primary.main' : 'text.secondary',
+                            fontWeight: isActive(item.path) ? 'medium' : 'regular',
+                            justifyContent: 'flex-start',
+                            px: 2,
+                            py: 1.5,
+                            '&:hover': {
+                                color: 'primary.main',
+                                bgcolor: 'transparent',
+                            },
+                        }}
+                        onClick={handleDrawerToggle}
+                    >
+                        {item.label}
+                    </Button>
+                </ListItem>
+            ))}
+        </List>
+    );
 
     return (
         <>
@@ -17,63 +58,61 @@ const Header = () => {
                         Finance Control
                     </Typography>
 
-                    <Box component="nav">
+                    {/* Mobile menu button */}
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        edge="start"
+                        onClick={handleDrawerToggle}
+                        sx={{ display: { sm: 'none' } }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+
+                    {/* Desktop navigation */}
+                    <Box component="nav" sx={{ display: { xs: 'none', sm: 'block' } }}>
                         <Box component="ul" display="flex" gap={3} sx={{ listStyle: 'none', p: 0, m: 0 }}>
-                            <Box component="li">
-                                <Button
-                                    component={Link}
-                                    to="/"
-                                    startIcon={<DashboardIcon fontSize="small" />}
-                                    sx={{
-                                        color: isActive('/') ? 'primary.main' : 'text.secondary',
-                                        fontWeight: isActive('/') ? 'medium' : 'regular',
-                                        '&:hover': {
-                                            color: 'primary.main',
-                                            bgcolor: 'transparent',
-                                        },
-                                    }}
-                                >
-                                    Dashboard
-                                </Button>
-                            </Box>
-                            <Box component="li">
-                                <Button
-                                    component={Link}
-                                    to="/transactions"
-                                    startIcon={<CreditCard fontSize="small" />}
-                                    sx={{
-                                        color: isActive('/transactions') ? 'primary.main' : 'text.secondary',
-                                        fontWeight: isActive('/transactions') ? 'medium' : 'regular',
-                                        '&:hover': {
-                                            color: 'primary.main',
-                                            bgcolor: 'transparent',
-                                        },
-                                    }}
-                                >
-                                    Transações
-                                </Button>
-                            </Box>
-                            <Box component="li">
-                                <Button
-                                    component={Link}
-                                    to="/consolidated"
-                                    startIcon={<BarChart fontSize="small" />}
-                                    sx={{
-                                        color: isActive('/consolidated') ? 'primary.main' : 'text.secondary',
-                                        fontWeight: isActive('/consolidated') ? 'medium' : 'regular',
-                                        '&:hover': {
-                                            color: 'primary.main',
-                                            bgcolor: 'transparent',
-                                        },
-                                    }}
-                                >
-                                    Consolidado
-                                </Button>
-                            </Box>
+                            {menuItems.map((item) => (
+                                <Box component="li" key={item.path}>
+                                    <Button
+                                        component={Link}
+                                        to={item.path}
+                                        startIcon={item.icon}
+                                        sx={{
+                                            color: isActive(item.path) ? 'primary.main' : 'text.secondary',
+                                            fontWeight: isActive(item.path) ? 'medium' : 'regular',
+                                            '&:hover': {
+                                                color: 'primary.main',
+                                                bgcolor: 'transparent',
+                                            },
+                                        }}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                </Box>
+                            ))}
                         </Box>
                     </Box>
                 </Toolbar>
             </AppBar>
+
+            {/* Mobile drawer */}
+            <Drawer
+                variant="temporary"
+                anchor="right"
+                open={mobileOpen}
+                onClose={handleDrawerToggle}
+                ModalProps={{
+                    keepMounted: true, // Better open performance on mobile
+                }}
+                sx={{
+                    display: { xs: 'block', sm: 'none' },
+                    '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+                }}
+            >
+                {drawer}
+            </Drawer>
+
             <Toolbar />
         </>
     );
