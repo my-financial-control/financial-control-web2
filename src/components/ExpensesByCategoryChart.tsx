@@ -24,19 +24,6 @@ function renderXAxisTick({ x, y, payload }: any) {
     );
 }
 
-// Custom label for pie chart (outside, with line)
-function renderPieLabel({ cx, cy, midAngle, outerRadius, percent, name }: any) {
-    const RADIAN = Math.PI / 180;
-    const radius = outerRadius + 16;
-    const x = cx + radius * Math.cos(-midAngle * RADIAN);
-    const y = cy + radius * Math.sin(-midAngle * RADIAN);
-    return (
-        <text x={x} y={y} fill="#333" fontSize={12} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-            {name} ({(percent * 100).toFixed(0)}%)
-        </text>
-    );
-}
-
 export function ExpensesByCategoryChart({ filters }: ExpensesByCategoryChartProps) {
     const [chartType, setChartType] = useState<ChartType>('pie');
     const { data: transactions, isLoading } = useTransactions({ ...filters, type: 'EXPENSE' });
@@ -100,12 +87,12 @@ export function ExpensesByCategoryChart({ filters }: ExpensesByCategoryChartProp
                                     dataKey="value"
                                     // Removendo label para evitar sobreposição
                                 >
-                                    {chartData.map((entry, index) => (
+                                    {chartData.map((_, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    formatter={(value: number, name: string, props: any) => [formatCurrency(value), props.payload.name]}
+                                    formatter={(value: number, _name: string, props: any) => [formatCurrency(value), props.payload.name]}
                                 />
                             </PieChart>
                         ) : (
@@ -117,7 +104,7 @@ export function ExpensesByCategoryChart({ filters }: ExpensesByCategoryChartProp
                                     formatter={(value: number) => formatCurrency(value)}
                                 />
                                 <Bar dataKey="value" fill="#8884d8">
-                                    {chartData.map((entry, index) => (
+                                    {chartData.map((_, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Bar>
