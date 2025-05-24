@@ -4,6 +4,7 @@ import { useCalculateTotals } from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/formatters";
 import { useState } from "react";
 import { months } from "../utils/data";
+import { ExpensesByCategoryChart } from "../components/ExpensesByCategoryChart";
 
 const DashboardPage = () => {
     const currentYear = new Date().getFullYear();
@@ -136,6 +137,10 @@ const DashboardPage = () => {
                                 </Paper>
                             </Fade>
                         )}
+                    </Box>
+
+                    <Box sx={{ mt: 3 }}>
+                        <ExpensesByCategoryChart filters={{ month: selectedMonth, year: selectedYear }} />
                     </Box>
                 </Box>
             </Container>
