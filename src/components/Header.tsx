@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Drawer, List, ListItem } from "@mui/material";
-import { Dashboard as DashboardIcon, CreditCard, BarChart, Menu as MenuIcon } from "@mui/icons-material";
+import { Dashboard as DashboardIcon, CreditCard, BarChart, Menu as MenuIcon, AccountBalance } from "@mui/icons-material";
 import { useState } from "react";
 
 const Header = () => {
@@ -19,6 +19,7 @@ const Header = () => {
         { path: '/', label: 'Dashboard', icon: <DashboardIcon fontSize="small" /> },
         { path: '/transactions', label: 'Transações', icon: <CreditCard fontSize="small" /> },
         { path: '/consolidated', label: 'Consolidado', icon: <BarChart fontSize="small" /> },
+        { path: '/borrowings', label: 'Empréstimos', icon: <AccountBalance fontSize="small" /> },
     ];
 
     const drawer = (
