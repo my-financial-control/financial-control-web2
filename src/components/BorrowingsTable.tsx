@@ -114,7 +114,6 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
                                         }}
                                     >
                                         <Box display="flex" alignItems="center" justifyContent="flex-start" gap={0.5}>
-                                            <MoneyIcon fontSize="small" />
                                             <span>{formatCurrency(borrowing.value)}</span>
                                         </Box>
                                     </TableCell>
