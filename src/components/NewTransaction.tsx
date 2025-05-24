@@ -114,7 +114,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
         const transaction: TransactionCreate = {
             title,
             description,
-            value: Number(value),
+            value: Number(value) / 100,
             type: transactionType as TransactionType,
             currentMonth,
             currentYear,
@@ -307,7 +307,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                                 </Grid>
                                 <Grid>
                                     <Typography variant="subtitle1">
-                                        Valor: {formatCurrency(Number(value))}
+                                        Valor: {formatCurrency(Number(value) / 100)}
                                     </Typography>
                                 </Grid>
                                 <Grid>
