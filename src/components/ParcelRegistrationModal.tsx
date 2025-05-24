@@ -78,7 +78,7 @@ export const ParcelRegistrationModal = ({
                         fullWidth
                         value={value}
                         onValueChange={(values) => {
-                            setValue(values.value);
+                            setValue(Number(values.value));
                         }}
                     />
                 </Box>
