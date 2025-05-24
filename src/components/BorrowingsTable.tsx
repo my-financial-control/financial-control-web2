@@ -14,6 +14,7 @@ import {
     Person as PersonIcon,
     AttachMoney as MoneyIcon,
     CalendarMonth as CalendarIcon,
+    Description as DescriptionIcon,
 } from "@mui/icons-material";
 import type { Borrowing } from "../types/borrowing";
 import { formatCurrency, formatDate } from '../utils/formatters';
@@ -64,6 +65,12 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
                                     <span>Emprestado para</span>
                                 </Box>
                             </TableCell>
+                            <TableCell>
+                                <Box display="flex" alignItems="center" gap={0.5}>
+                                    <DescriptionIcon fontSize="small" />
+                                    <span>Descrição</span>
+                                </Box>
+                            </TableCell>
                             <TableCell align="left">
                                 <Box display="flex" alignItems="center" justifyContent="flex-start" gap={0.5}>
                                     <MoneyIcon fontSize="small" />
@@ -98,6 +105,7 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
                                     onClick={() => handleOpenModal(borrowing)}
                                 >
                                     <TableCell>{borrowing.borrower}</TableCell>
+                                    <TableCell>{borrowing.description}</TableCell>
                                     <TableCell
                                         align="left"
                                         sx={{

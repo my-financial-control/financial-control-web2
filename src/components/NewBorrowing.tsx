@@ -34,6 +34,7 @@ export const NewBorrowing = ({ open, onClose }: NewBorrowingProps) => {
     const { control, handleSubmit, reset, formState: { errors }, setValue, setError } = useForm<BorrowingCreate>({
         defaultValues: {
             borrower: '',
+            description: '',
             value: 0,
             date: addDays(new Date(), 1).toISOString().split('T')[0],
         }
@@ -79,6 +80,20 @@ export const NewBorrowing = ({ open, onClose }: NewBorrowingProps) => {
                                     label="Emprestado para *"
                                     error={!!errors.borrower}
                                     helperText={errors.borrower?.message}
+                                />
+                            )}
+                        />
+
+                        <Controller
+                            name="description"
+                            control={control}
+                            rules={{ required: 'Campo obrigatório' }}
+                            render={({ field }: { field: FieldValues }) => (
+                                <TextField
+                                    {...field}
+                                    label="Descrição *"
+                                    error={!!errors.description}
+                                    helperText={errors.description?.message}
                                 />
                             )}
                         />

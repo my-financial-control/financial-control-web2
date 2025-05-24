@@ -10,6 +10,7 @@ export type ParcelCreate = {
 export type Borrowing = {
     id: string;
     borrower: string;
+    description: string;
     value: number;
     date: string;
     parcels: Parcel[];
@@ -18,6 +19,7 @@ export type Borrowing = {
 
 export type BorrowingCreate = {
     borrower: string;
+    description: string;
     value: number;
     date?: string;
 }
