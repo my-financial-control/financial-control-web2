@@ -14,6 +14,8 @@ export type Borrowing = {
     value: number;
     date: string;
     parcels: Parcel[];
+    hasReceipt: boolean;
+    timestamp: string;
 };
 
 

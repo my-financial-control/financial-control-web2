@@ -23,11 +23,14 @@ import {
     AttachMoney as MoneyIcon,
     Close as CloseIcon,
     Add as AddIcon,
+    Download as DownloadIcon,
 } from "@mui/icons-material";
 import { type Borrowing } from "../types/borrowing";
 import { formatCurrency, formatDate } from "../utils/formatters";
 import { useState } from "react";
 import { ParcelRegistrationModal } from "./ParcelRegistrationModal";
+import { useMutation } from "@tanstack/react-query";
+import { borrowingsApi } from "../services/borrowings";
 
 interface BorrowingDetailsProps {
     open: boolean;
@@ -40,6 +43,17 @@ export const BorrowingDetails = ({ open, onClose, borrowing }: BorrowingDetailsP
 
     const totalPaid = borrowing.parcels.reduce((sum, parcel) => sum + parcel.value, 0);
     const remainingValue = borrowing.value - totalPaid;
+
+    const { mutate: downloadReceipt, isPending } = useMutation({
+        mutationFn: () => borrowingsApi.downloadReceipt(borrowing.id),
+        onSuccess: (receipt) => {
+            const url = URL.createObjectURL(receipt);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${borrowing.borrower}-${borrowing.id}.pdf`;
+            a.click();
+        }
+    });
 
     return (
         <>
@@ -156,6 +170,17 @@ export const BorrowingDetails = ({ open, onClose, borrowing }: BorrowingDetailsP
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={onClose}>Fechar</Button>
+                    {borrowing.hasReceipt && (
+                        <Button
+                            onClick={() => downloadReceipt()}
+                            color="primary"
+                            variant="contained"
+                            startIcon={<DownloadIcon />}
+                            disabled={isPending}
+                        >
+                            {isPending ? 'Baixando...' : 'Comprovante'}
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
 

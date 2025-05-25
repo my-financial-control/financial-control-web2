@@ -13,13 +13,17 @@ export const borrowingsApi = {
         return response.json();
     },
 
-    create: async (borrowing: BorrowingCreate): Promise<Borrowing> => {
+    create: async (borrowing: BorrowingCreate, receipt?: File): Promise<Borrowing> => {
+        const formData = new FormData();
+        formData.append('borrowing', JSON.stringify(borrowing));
+
+        if (receipt) {
+            formData.append('receipt', receipt);
+        }
+
         const response = await fetch(`${borrowingsApi.apiPath}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(borrowing),
+            body: formData,
         });
 
         if (!response.ok) {
@@ -41,5 +45,15 @@ export const borrowingsApi = {
         if (!response.ok) {
             throw new Error('Failed to pay parcel');
         }
+    },
+
+    downloadReceipt: async (borrowingId: string): Promise<Blob> => {
+        const response = await fetch(`${borrowingsApi.apiPath}/${borrowingId}/receipt`);
+
+        if (!response.ok) {
+            throw new Error('Failed to download receipt');
+        }
+
+        return response.blob();
     }
 }

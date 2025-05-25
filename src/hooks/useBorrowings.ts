@@ -11,12 +11,20 @@ export const useBorrowings = () => {
 
 export const useCreateBorrowing = () => {
     return useMutation({
-        mutationFn: (borrowing: BorrowingCreate) => borrowingsApi.create(borrowing),
+        mutationFn: (data: { borrowing: BorrowingCreate; receipt?: File | null }) =>
+            borrowingsApi.create(data.borrowing, data.receipt || undefined),
     });
 }
 
 export const usePayParcel = (id: string, parcel: Parcel) => {
     return useMutation({
         mutationFn: () => borrowingsApi.payParcel(id, parcel),
+    });
+}
+
+export const useDownloadReceipt = (borrowingId: string) => {
+    return useQuery({
+        queryKey: ['downloadReceipt', borrowingId],
+        queryFn: () => borrowingsApi.downloadReceipt(borrowingId),
     });
 }

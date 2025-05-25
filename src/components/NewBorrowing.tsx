@@ -23,6 +23,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { ptBR } from "date-fns/locale";
 import { addDays } from "date-fns";
+import { useState } from "react";
 
 interface NewBorrowingProps {
     open: boolean;
@@ -31,6 +32,7 @@ interface NewBorrowingProps {
 
 export const NewBorrowing = ({ open, onClose }: NewBorrowingProps) => {
     const queryClient = useQueryClient();
+    const [receipt, setReceipt] = useState<File | null>(null);
     const { control, handleSubmit, reset, formState: { errors }, setValue, setError } = useForm<BorrowingCreate>({
         defaultValues: {
             borrower: '',
@@ -44,12 +46,16 @@ export const NewBorrowing = ({ open, onClose }: NewBorrowingProps) => {
 
     const onSubmit = (data: BorrowingCreate) => {
         createBorrowing({
-            ...data,
-            value: data.value / 100
+            borrowing: {
+                ...data,
+                value: data.value / 100
+            },
+            receipt
         }, {
             onSuccess: () => {
                 queryClient.invalidateQueries({ queryKey: ['borrowings'] });
                 reset();
+                setReceipt(null);
                 onClose();
             },
         });
@@ -157,6 +163,19 @@ export const NewBorrowing = ({ open, onClose }: NewBorrowingProps) => {
                                 </LocalizationProvider>
                             )}
                         />
+
+                        <Button
+                            variant="outlined"
+                            component="label"
+                            fullWidth
+                        >
+                            {receipt ? 'Comprovante selecionado' : 'Selecionar comprovante'}
+                            <input
+                                type="file"
+                                hidden
+                                onChange={(e) => setReceipt(e.target.files?.[0] || null)}
+                            />
+                        </Button>
                     </Box>
                 </DialogContent>
                 <DialogActions>
