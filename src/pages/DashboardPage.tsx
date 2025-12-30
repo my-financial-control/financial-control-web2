@@ -19,7 +19,7 @@ const DashboardPage = () => {
 
     const isLoading = isBalanceLoading || isTotalsLoading || isBalancePlusRemainingLoading;
 
-    const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+    const years = Array.from({ length: 5 }, (_, i) => (currentYear + 1) - i);
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>

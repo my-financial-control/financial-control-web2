@@ -22,7 +22,7 @@ const ConsolidatedPage = () => {
     const [order, setOrder] = useState<Order>('desc');
     const [orderBy, setOrderBy] = useState<keyof ConsolidatedTransactions>('total');
 
-    const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+    const years = Array.from({ length: 5 }, (_, i) => (currentYear + 1) - i);
 
     const { data: consolidatedData, isLoading: isConsolidatedLoading } = useCalculateConsolidated({
         month: selectedMonth,
