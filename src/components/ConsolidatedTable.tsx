@@ -1,7 +1,7 @@
 import { Paper, Table, TableContainer, TableHead, TableRow, TableCell, TableBody, TablePagination, TableSortLabel } from "@mui/material";
 import { useState } from "react";
 import { formatCurrency } from "../utils/formatters";
-import type { ConsolidatedTransactions } from "../types/transaction";
+import type { ConsolidatedTransactions, Transaction } from "../types/transaction";
 import { ConsolidatedTransactionsModal } from "./ConsolidatedTransactionsModal";
 
 export type Order = 'asc' | 'desc';
@@ -11,9 +11,10 @@ interface ConsolidatedTableProps {
     order: Order;
     orderBy: keyof ConsolidatedTransactions;
     onRequestSort: (property: keyof ConsolidatedTransactions) => void;
+    onCreateFromExisting?: (transaction: Transaction) => void;
 }
 
-export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort }: ConsolidatedTableProps) => {
+export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort, onCreateFromExisting }: ConsolidatedTableProps) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [selectedConsolidation, setSelectedConsolidation] = useState<ConsolidatedTransactions | null>(null);
@@ -118,6 +119,7 @@ export const ConsolidatedTable = ({ data, order, orderBy, onRequestSort }: Conso
                     open={isModalOpen}
                     onClose={handleCloseModal}
                     consolidation={selectedConsolidation}
+                    onCreateFromExisting={(transaction) => onCreateFromExisting?.(transaction)}
                 />
             )}
         </>

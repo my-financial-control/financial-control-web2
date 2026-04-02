@@ -7,7 +7,7 @@ import { useCalculateTotals } from "../hooks/useTransactions";
 import { formatCurrency } from "../utils/formatters";
 import { months } from "../utils/data";
 import { NewTransaction } from "../components/NewTransaction";
-import type { ConsolidatedTransactions } from "../types/transaction";
+import type { ConsolidatedTransactions, Transaction } from "../types/transaction";
 import type { TransactionType } from "../types/common";
 import { ConsolidatedTable, type Order } from "../components/ConsolidatedTable";
 
@@ -19,6 +19,7 @@ const ConsolidatedPage = () => {
     const [selectedMonth, setSelectedMonth] = useState(currentMonth);
     const [selectedType, setSelectedType] = useState<TransactionType>('EXPENSE');
     const [isNewTransactionOpen, setIsNewTransactionOpen] = useState(false);
+    const [duplicateSourceTransaction, setDuplicateSourceTransaction] = useState<Transaction | null>(null);
     const [order, setOrder] = useState<Order>('desc');
     const [orderBy, setOrderBy] = useState<keyof ConsolidatedTransactions>('total');
 
@@ -40,6 +41,21 @@ const ConsolidatedPage = () => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
+    };
+
+    const handleOpenNewTransaction = () => {
+        setDuplicateSourceTransaction(null);
+        setIsNewTransactionOpen(true);
+    };
+
+    const handleCreateFromExisting = (transaction: Transaction) => {
+        setDuplicateSourceTransaction(transaction);
+        setIsNewTransactionOpen(true);
+    };
+
+    const handleCloseNewTransaction = () => {
+        setIsNewTransactionOpen(false);
+        setDuplicateSourceTransaction(null);
     };
 
     return (
@@ -104,7 +120,7 @@ const ConsolidatedPage = () => {
                             <Button
                                 variant="contained"
                                 startIcon={<AddIcon />}
-                                onClick={() => setIsNewTransactionOpen(true)}
+                                onClick={handleOpenNewTransaction}
                             >
                                 Nova Transação
                             </Button>
@@ -203,6 +219,7 @@ const ConsolidatedPage = () => {
                                     order={order}
                                     orderBy={orderBy}
                                     onRequestSort={handleRequestSort}
+                                    onCreateFromExisting={handleCreateFromExisting}
                                 />
                             </Box>
                         </Fade>
@@ -212,7 +229,8 @@ const ConsolidatedPage = () => {
 
             <NewTransaction
                 open={isNewTransactionOpen}
-                onClose={() => setIsNewTransactionOpen(false)}
+                onClose={handleCloseNewTransaction}
+                prefillFrom={duplicateSourceTransaction}
             />
         </Box>
     );

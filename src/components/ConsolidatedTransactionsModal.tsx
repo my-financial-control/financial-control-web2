@@ -20,9 +20,10 @@ import {
     CalendarMonth as CalendarIcon,
     Bookmark as BookmarkIcon,
     Download as DownloadIcon,
-    ContentCopy as CopyIcon
+    ContentCopy as CopyIcon,
+    ContentCopy as DuplicateIcon
 } from "@mui/icons-material";
-import { type ConsolidatedTransactions } from "../types/transaction";
+import { type ConsolidatedTransactions, type Transaction } from "../types/transaction";
 import { formatDate, formatCurrency, formatTimestamp, formatFileName, shortenUuid } from "../utils/formatters";
 import { useDownloadReceipt } from "../hooks/useTransactions";
 
@@ -30,9 +31,42 @@ interface ConsolidatedTransactionsModalProps {
     open: boolean;
     onClose: () => void;
     consolidation: ConsolidatedTransactions;
+    onCreateFromExisting: (transaction: Transaction) => void;
 }
 
-export const ConsolidatedTransactionsModal = ({ open, onClose, consolidation }: ConsolidatedTransactionsModalProps) => {
+type ReceiptButtonProps = {
+    transaction: Transaction;
+};
+
+const ReceiptButton = ({ transaction }: ReceiptButtonProps) => {
+    const { data: receipt } = useDownloadReceipt(transaction.id);
+
+    if (!transaction.hasReceipt) {
+        return null;
+    }
+
+    return (
+        <Box display="flex" justifyContent="flex-end" gap={1}>
+            <Button
+                onClick={() => {
+                    if (!receipt) return;
+                    const url = URL.createObjectURL(receipt);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${formatFileName(transaction.title)}.pdf`;
+                    a.click();
+                }}
+                color="primary"
+                variant="contained"
+                startIcon={<DownloadIcon />}
+            >
+                Comprovante
+            </Button>
+        </Box>
+    );
+};
+
+export const ConsolidatedTransactionsModal = ({ open, onClose, consolidation, onCreateFromExisting }: ConsolidatedTransactionsModalProps) => {
     const handleCopyId = (id: string) => {
         navigator.clipboard.writeText(id);
     };
@@ -152,27 +186,19 @@ export const ConsolidatedTransactionsModal = ({ open, onClose, consolidation }: 
                                         </Grid>
                                     </Grid>
 
-                                    {transaction.hasReceipt && (
-                                        <Box display="flex" justifyContent="flex-end">
-                                            <Button
-                                                onClick={() => {
-                                                    const { data: receipt } = useDownloadReceipt(transaction.id);
-                                                    if (receipt) {
-                                                        const url = URL.createObjectURL(receipt);
-                                                        const a = document.createElement('a');
-                                                        a.href = url;
-                                                        a.download = `${formatFileName(transaction.title)}.pdf`;
-                                                        a.click();
-                                                    }
-                                                }}
-                                                color="primary"
-                                                variant="contained"
-                                                startIcon={<DownloadIcon />}
-                                            >
-                                                Comprovante
-                                            </Button>
-                                        </Box>
-                                    )}
+                                    <Box display="flex" justifyContent="flex-end" gap={1}>
+                                        <Button
+                                            onClick={() => {
+                                                onCreateFromExisting(transaction);
+                                                onClose();
+                                            }}
+                                            color="primary"
+                                            startIcon={<DuplicateIcon />}
+                                        >
+                                            Copiar
+                                        </Button>
+                                        <ReceiptButton transaction={transaction} />
+                                    </Box>
                                 </Box>
                             </AccordionDetails>
                         </Accordion>
