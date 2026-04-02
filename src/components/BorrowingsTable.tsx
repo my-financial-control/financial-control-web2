@@ -102,31 +102,42 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
                             </TableRow>
                         ) : (
                             paginatedBorrowings.map((borrowing) => (
-                                <TableRow
-                                    key={borrowing.id}
-                                    sx={{
-                                        cursor: 'pointer',
-                                        '&:hover': {
-                                            bgcolor: 'rgba(0, 0, 0, 0.04)'
-                                        }
-                                    }}
-                                    onClick={() => handleOpenModal(borrowing)}
-                                >
-                                    <TableCell>{borrowing.borrower}</TableCell>
-                                    <TableCell>{borrowing.description}</TableCell>
-                                    <TableCell
-                                        align="left"
-                                        sx={{
-                                            fontWeight: 500,
-                                            color: "warning.main"
-                                        }}
-                                    >
-                                        <Box display="flex" alignItems="center" justifyContent="flex-start" gap={0.5}>
-                                            <span>{formatCurrency(borrowing.value)}</span>
-                                        </Box>
-                                    </TableCell>
-                                    <TableCell>{formatDate(borrowing.date)}</TableCell>
-                                </TableRow>
+                                // TODO: move the isPaidOff logic to the backend
+                                (() => {
+                                    const totalPaid = borrowing.parcels.reduce(
+                                        (sum, parcel) => sum + parcel.value,
+                                        0
+                                    );
+                                    const isPaidOff = totalPaid >= borrowing.value;
+
+                                    return (
+                                        <TableRow
+                                            key={borrowing.id}
+                                            sx={{
+                                                cursor: 'pointer',
+                                                '&:hover': {
+                                                    bgcolor: 'rgba(0, 0, 0, 0.04)'
+                                                }
+                                            }}
+                                            onClick={() => handleOpenModal(borrowing)}
+                                        >
+                                            <TableCell>{borrowing.borrower}</TableCell>
+                                            <TableCell>{borrowing.description}</TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{
+                                                    fontWeight: 500,
+                                                    color: isPaidOff ? "success.main" : "warning.main"
+                                                }}
+                                            >
+                                                <Box display="flex" alignItems="center" justifyContent="flex-start" gap={0.5}>
+                                                    <span>{formatCurrency(borrowing.value)}</span>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell>{formatDate(borrowing.date)}</TableCell>
+                                        </TableRow>
+                                    );
+                                })()
                             ))
                         )}
                     </TableBody>
