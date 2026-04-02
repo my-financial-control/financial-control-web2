@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
     Table,
     TableContainer,
@@ -48,7 +48,15 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
         setIsModalOpen(false);
     };
 
-    const paginatedBorrowings = borrowings.slice(
+    const sortedBorrowings = useMemo(
+        () =>
+            [...borrowings].sort(
+                (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+            ),
+        [borrowings]
+    );
+
+    const paginatedBorrowings = sortedBorrowings.slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage
     );
@@ -126,7 +134,7 @@ export const BorrowingsTable = ({ borrowings }: BorrowingsTableProps) => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={borrowings.length}
+                    count={sortedBorrowings.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
