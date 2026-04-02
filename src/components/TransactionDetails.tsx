@@ -17,7 +17,8 @@ import {
     Bookmark as BookmarkIcon,
     Download as DownloadIcon,
     Close as CloseIcon,
-    ContentCopy as CopyIcon
+    ContentCopy as CopyIcon,
+    ContentCopy as DuplicateIcon
 } from "@mui/icons-material";
 import { type Transaction } from "../types/transaction";
 import { formatCurrency, formatDate, formatTimestamp, formatFileName } from "../utils/formatters";
@@ -27,9 +28,10 @@ interface TransactionDetailProps {
     open: boolean;
     onClose: () => void;
     transaction: Transaction;
+    onCreateFromExisting: (transaction: Transaction) => void;
 }
 
-export const TransactionDetails = ({ open, onClose, transaction }: TransactionDetailProps) => {
+export const TransactionDetails = ({ open, onClose, transaction, onCreateFromExisting }: TransactionDetailProps) => {
     const { data: receipt } = useDownloadReceipt(transaction.id);
 
     const handleDownloadReceipt = () => {
@@ -143,6 +145,14 @@ export const TransactionDetails = ({ open, onClose, transaction }: TransactionDe
                     startIcon={<CloseIcon />}
                 >
                     Fechar
+                </Button>
+
+                <Button
+                    onClick={() => onCreateFromExisting(transaction)}
+                    color="primary"
+                    startIcon={<DuplicateIcon />}
+                >
+                    Copiar
                 </Button>
 
                 {transaction.hasReceipt && (

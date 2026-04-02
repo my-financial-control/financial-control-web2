@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogContent,
@@ -26,7 +26,7 @@ import { NumberFormatBase } from 'react-number-format';
 import { useCategories } from '../hooks/useCategories';
 import { useCreateTransaction } from '../hooks/useTransactions';
 import type { TransactionType } from '../types/common';
-import type { TransactionCreate } from '../types/transaction';
+import type { Transaction, TransactionCreate } from '../types/transaction';
 import { months } from '../utils/data';
 import { currencyFormatterForField, formatCurrency } from '../utils/formatters';
 const steps = ['Tipo e Categoria', 'Detalhes', 'Data', 'Revisão'];
@@ -34,9 +34,10 @@ const steps = ['Tipo e Categoria', 'Detalhes', 'Data', 'Revisão'];
 interface NewTransactionProps {
     open: boolean;
     onClose: () => void;
+    prefillFrom?: Transaction | null;
 }
 
-export function NewTransaction({ open, onClose }: NewTransactionProps) {
+export function NewTransaction({ open, onClose, prefillFrom = null }: NewTransactionProps) {
     const [activeStep, setActiveStep] = useState(0);
     const [transactionType, setTransactionType] = useState<TransactionType | ''>('');
     const [categoryId, setCategoryId] = useState('');
@@ -60,6 +61,38 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
     const createTransaction = useCreateTransaction();
 
     const filteredCategories = categories.filter(cat => cat.type === transactionType);
+
+    const resetForm = (sourceTransaction: Transaction | null = null) => {
+        const now = new Date();
+
+        setActiveStep(0);
+        setTransactionType(sourceTransaction?.type ?? '');
+        setCategoryId(sourceTransaction?.category?.id ?? '');
+        setTitle(sourceTransaction?.title ?? '');
+        setDescription(sourceTransaction?.description ?? '');
+        setValue(
+            sourceTransaction
+                ? String(Math.round(sourceTransaction.value * 100))
+                : ''
+        );
+        setDate(now);
+        setCurrentMonth(now.getMonth() + 1);
+        setCurrentYear(now.getFullYear());
+        setReceipt(null);
+        setErrors({
+            transactionType: false,
+            categoryId: false,
+            title: false,
+            value: false,
+            date: false,
+        });
+    };
+
+    useEffect(() => {
+        if (open) {
+            resetForm(prefillFrom);
+        }
+    }, [open, prefillFrom]);
 
     const validateStep = (step: number): boolean => {
         const newErrors = { ...errors };
@@ -124,6 +157,7 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
 
         try {
             await createTransaction.mutateAsync({ transaction, receipt });
+            resetForm(null);
             onClose();
         } catch (error) {
             console.error('Error creating transaction:', error);
@@ -366,7 +400,14 @@ export function NewTransaction({ open, onClose }: NewTransactionProps) {
                                                     Próximo
                                                 </Button>
                                             )}
-                                            <Button onClick={onClose} variant="text" color="secondary">
+                                            <Button
+                                                onClick={() => {
+                                                    resetForm(null);
+                                                    onClose();
+                                                }}
+                                                variant="text"
+                                                color="secondary"
+                                            >
                                                 Cancelar
                                             </Button>
                                         </Box>

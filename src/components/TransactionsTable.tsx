@@ -25,9 +25,10 @@ import { TransactionDetails } from "./TransactionDetails";
 
 type TransactionsTableProps = {
     transactions: Transaction[];
+    onCreateFromExisting?: (transaction: Transaction) => void;
 };
 
-export const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
+export const TransactionsTable = ({ transactions, onCreateFromExisting }: TransactionsTableProps) => {
     const [activeTab, setActiveTab] = useState<string>("all");
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -55,6 +56,11 @@ export const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+    };
+
+    const handleCreateFromExisting = (transaction: Transaction) => {
+        setIsModalOpen(false);
+        onCreateFromExisting?.(transaction);
     };
 
     const filteredTransactions = transactions.filter((transaction) => {
@@ -186,6 +192,7 @@ export const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                     open={isModalOpen}
                     onClose={handleCloseModal}
                     transaction={selectedTransaction}
+                    onCreateFromExisting={handleCreateFromExisting}
                 />
             )}
         </Box>

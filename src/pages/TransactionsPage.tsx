@@ -4,10 +4,27 @@ import { useState } from "react";
 import { TransactionsTable } from "../components/TransactionsTable";
 import { useTransactions } from "../hooks/useTransactions";
 import { NewTransaction } from "../components/NewTransaction";
+import type { Transaction } from "../types/transaction";
 
 const TransactionsPage = () => {
     const { data: transactions, isLoading } = useTransactions();
     const [isNewTransactionOpen, setIsNewTransactionOpen] = useState(false);
+    const [duplicateSourceTransaction, setDuplicateSourceTransaction] = useState<Transaction | null>(null);
+
+    const handleOpenNewTransaction = () => {
+        setDuplicateSourceTransaction(null);
+        setIsNewTransactionOpen(true);
+    };
+
+    const handleCreateFromExisting = (transaction: Transaction) => {
+        setDuplicateSourceTransaction(transaction);
+        setIsNewTransactionOpen(true);
+    };
+
+    const handleCloseNewTransaction = () => {
+        setIsNewTransactionOpen(false);
+        setDuplicateSourceTransaction(null);
+    };
 
     return (
         <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -25,7 +42,7 @@ const TransactionsPage = () => {
                         <Button
                             variant="contained"
                             startIcon={<AddIcon />}
-                            onClick={() => setIsNewTransactionOpen(true)}
+                            onClick={handleOpenNewTransaction}
                         >
                             Nova Transação
                         </Button>
@@ -43,7 +60,10 @@ const TransactionsPage = () => {
                     ) : (
                         <Fade in={true} timeout={500}>
                             <Box>
-                                <TransactionsTable transactions={transactions ?? []} />
+                                <TransactionsTable
+                                    transactions={transactions ?? []}
+                                    onCreateFromExisting={handleCreateFromExisting}
+                                />
                             </Box>
                         </Fade>
                     )}
@@ -52,7 +72,8 @@ const TransactionsPage = () => {
 
             <NewTransaction
                 open={isNewTransactionOpen}
-                onClose={() => setIsNewTransactionOpen(false)}
+                onClose={handleCloseNewTransaction}
+                prefillFrom={duplicateSourceTransaction}
             />
         </Box>
     );
